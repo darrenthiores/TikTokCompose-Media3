@@ -1,9 +1,11 @@
 package com.dev.tiktok_compose.presentation.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -11,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.dev.tiktok_compose.data.model.Feed
@@ -67,14 +70,35 @@ private fun HomeSideBar(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Image(
+        Box(
             modifier = Modifier
                 .size(48.dp)
-                .clip(CircleShape)
-                .border(2.dp, MaterialTheme.colors.onBackground, CircleShape),
-            painter = rememberAsyncImagePainter(profile_picture),
-            contentDescription = "profile picture"
-        )
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(48.dp)
+                    .align(Alignment.Center)
+                    .clip(CircleShape)
+                    .border(2.dp, MaterialTheme.colors.onBackground, CircleShape),
+                painter = rememberAsyncImagePainter(profile_picture),
+                contentDescription = "profile picture"
+            )
+            Icon(
+                imageVector = Icons.Filled.Add,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(20.dp)
+                    .align(Alignment.BottomCenter)
+                    .offset(
+                        y = 10.dp
+                    )
+                    .background(
+                        color = Color.Red,
+                        shape = CircleShape
+                    ),
+                tint = MaterialTheme.colors.onBackground
+            )
+        }
 
         IconWithText(
             modifier = Modifier
