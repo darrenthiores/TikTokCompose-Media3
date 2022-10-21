@@ -28,13 +28,18 @@ fun FeedItem(
         modifier = modifier
             .fillMaxSize()
     ) {
-        VideoPlayer(
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.Center),
-            url = feed.video_url,
-            play = play
-        )
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            VideoPlayer(
+                modifier = Modifier
+                    .fillMaxSize(),
+                url = feed.video_url,
+                play = play
+            )
+        }
 
         TitleAndDescriptionText(
             modifier = Modifier

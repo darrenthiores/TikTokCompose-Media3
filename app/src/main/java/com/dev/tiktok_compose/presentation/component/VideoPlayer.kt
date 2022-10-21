@@ -2,7 +2,6 @@ package com.dev.tiktok_compose.presentation.component
 
 import android.graphics.Color
 import android.view.LayoutInflater
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -10,7 +9,6 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.datasource.DefaultHttpDataSource
@@ -22,11 +20,10 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.exoplayer.trackselection.TrackSelector
 import androidx.media3.exoplayer.upstream.DefaultAllocator
 import androidx.media3.ui.AspectRatioFrameLayout
-import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView
-import androidx.media3.ui.TimeBar
-import androidx.media3.ui.TimeBar.OnScrubListener
 import com.dev.tiktok_compose.R
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun VideoPlayer(
@@ -36,10 +33,15 @@ fun VideoPlayer(
 ) {
     val exoPlayer = rememberExoPlayerWithLifecycle(url)
     val playerView = rememberPlayerView(exoPlayer)
+    val coroutineScope = rememberCoroutineScope()
 
     playerView.apply {
         useController = false
     }
+
+    // possible reducing lag
+//    if (play) exoPlayer.play()
+//    else exoPlayer.pause()
 
     playerView.setOnClickListener {
         if (exoPlayer.isPlaying) {
@@ -55,7 +57,16 @@ fun VideoPlayer(
 
     AndroidView(
         factory = { playerView },
-        modifier = modifier
+        modifier = modifier,
+        update = { // possible reducing lag
+            coroutineScope.launch {
+                exoPlayer.playWhenReady = false
+
+                delay(1000)
+
+                exoPlayer.playWhenReady = play
+            }
+        }
     )
 
     val lifecycleOwner by rememberUpdatedState(LocalLifecycleOwner.current)
@@ -69,6 +80,15 @@ fun VideoPlayer(
                 }
                 Lifecycle.Event.ON_RESUME -> {
                     playerView.onResume()
+                }
+                Lifecycle.Event.ON_DESTROY -> {
+                    exoPlayer.run {
+                        stop()
+                        release()
+                    }
+                }
+                Lifecycle.Event.ON_STOP -> {
+                    exoPlayer.stop()
                 }
                 else -> Unit
             }
